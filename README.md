@@ -5,7 +5,8 @@ To do this, I used [JFreeCharts](http://www.jfree.org/jfreechart/) and [Syntheti
 
 Some screenshots of the project:
 
-![](screenshots/homero_splash.PNG)
+Main screen:  
+![](screenshots/homero_main.PNG)
 
-
-
+Example of chart:  
+![](screenshots/homero_chart.PNG)
