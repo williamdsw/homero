@@ -87,12 +87,14 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="btnYear" alignment="3" min="-2" pref="128" max="-2" attributes="0"/>
-                      <Component id="btnCountry" alignment="3" min="-2" pref="128" max="-2" attributes="0"/>
-                      <Component id="btnGameGenre" alignment="3" min="-2" pref="128" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="btnGameMode" alignment="0" min="-2" pref="128" max="-2" attributes="0"/>
                       <Component id="btnPlataform" alignment="1" min="-2" pref="128" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="btnYear" alignment="3" min="-2" pref="128" max="-2" attributes="0"/>
+                          <Component id="btnCountry" alignment="3" min="-2" pref="128" max="-2" attributes="0"/>
+                          <Component id="btnGameGenre" alignment="3" min="-2" pref="128" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>

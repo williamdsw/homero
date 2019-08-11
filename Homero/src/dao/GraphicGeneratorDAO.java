@@ -20,8 +20,12 @@ import org.jfree.data.xy.XYDataset;
  */
 public class GraphicGeneratorDAO
 {
-
+    //-----------------------------------------------------------------------------------//
+    // CONSTRUCTORS
+    
     public GraphicGeneratorDAO () {}
+    
+    //-----------------------------------------------------------------------------------//
     
     /**
      * Generates a Chart based on type especified.
@@ -34,10 +38,7 @@ public class GraphicGeneratorDAO
      */
     public BufferedImage createChart (String type, String title, String categoryLabel, String valueLabel, Collection<GraphicParameterMODEL> listModels)
     {
-        /*  Output image */
         BufferedImage image = null;
-        
-        /* Chart itself */
         JFreeChart chart = null;
         
         try
@@ -46,79 +47,92 @@ public class GraphicGeneratorDAO
             {
                 case "HORIZONTAL_BAR_3D": case "VERTICAL_BAR_3D":
                 {
-                    /* Dataset */
-                    DefaultCategoryDataset dataset = new DefaultCategoryDataset ();
-
-                    /* Filling in dataset */
-                    for (GraphicParameterMODEL model : listModels)
-                    {
-                        dataset.addValue (model.getValue (), model.getRowLabel (), model.getColumnLabel ());
-                    }
-                    
-                    /* Define orientation */
-                    PlotOrientation orientation = (type.equals ("HORIZONTAL_BAR_3D") ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);
-                    
-                    /* Creates the chart */
-                    chart = ChartFactory.createBarChart3D (title, categoryLabel, valueLabel, dataset, orientation, true, false, false);
-            
+                    chart = createBarChart (listModels, type, title, categoryLabel, valueLabel);
                     break;
                 }
                 
                 case "PIE": case "RING":
                 {
-                    /* Dataset */
-                    DefaultPieDataset dataset = new DefaultPieDataset ();
-
-                    /* Filling in dataset */
-                    for (GraphicParameterMODEL model : listModels)
-                    {
-                        dataset.setValue (model.getColumnLabel (), model.getValue ());
-                    }
-                    
-                    /* Creates the chart */
-                    chart = (type.equals ("PIE") ? ChartFactory.createPieChart (title, dataset, true, false, false) : ChartFactory.createRingChart (title, dataset, true, false, false));
-                    
+                    chart = createRoundedChart (listModels, type, title);
                     break;
                 }
                 
                 case "TIMESERIES":
                 {
-                    /* Dataset */
-                    TimeSeriesCollection dataset = new TimeSeriesCollection ();
-                    TimeSeries series = new TimeSeries ("Number of Sales", Year.class);
-                    
-                    dataset.setDomainIsPointsInTime (true);
-                    
-                    /* Filling in dataset */
-                    for (GraphicParameterMODEL model : listModels)
-                    {
-                        series.add (new Year (Integer.parseInt (model.getColumnLabel ())), model.getValue ());
-                    }
-                    
-                    dataset.addSeries (series);
-                    
-                    /* Creates the chart */
-                    chart = ChartFactory.createTimeSeriesChart (title, valueLabel, valueLabel, (XYDataset) dataset, true, false, false);
-                    
+                    chart = createTimeSeriesChart (listModels, title, valueLabel);
+                    break;
+                }
+                
+                default:
+                {
                     break;
                 }
             }
             
             if (chart != null)
             {
-                /* Border */
+                // Border and image
                 chart.setBorderVisible (true);
                 chart.setBorderPaint (Color.BLACK);
-
-                /* Create image (width x height) */
                 image = chart.createBufferedImage (800, 600);
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            System.out.println (e.getMessage ());
+            System.out.println (ex.getMessage ());
         }
         
         return image;
+    }
+
+    // HORIZONTAL / VERTICAL BAR
+    private JFreeChart createBarChart (Collection<GraphicParameterMODEL> listModels, String type, String title, String categoryLabel, String valueLabel)
+    {
+        // Dataset with values
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset ();
+        
+        listModels.forEach ((model) -> 
+        {
+            dataset.setValue (model.getValue (), model.getRowLabel (), model.getColumnLabel ());
+        });
+        
+        PlotOrientation orientation = (type.equals ("HORIZONTAL_BAR_3D") ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);
+        
+        // Returns new chart
+        return ChartFactory.createBarChart3D (title, categoryLabel, valueLabel, dataset, orientation, true, false, false);
+    }
+    
+    // PIE OR RING
+    private JFreeChart createRoundedChart (Collection<GraphicParameterMODEL> listModels, String type, String title)
+    {
+        // Dataset with values
+        DefaultPieDataset dataset = new DefaultPieDataset ();
+        
+        listModels.forEach ((model) -> 
+        {
+            dataset.setValue (model.getColumnLabel (), model.getValue ());
+        });
+        
+        // Returns new chart
+        return (type.equals ("PIE") ? ChartFactory.createPieChart (title, dataset, true, false, false) : ChartFactory.createRingChart (title, dataset, true, false, false));
+    }
+    
+    // TIMESERIES
+    private JFreeChart createTimeSeriesChart (Collection<GraphicParameterMODEL> listModels, String title, String valueLabel) throws NumberFormatException
+    {
+        // Dataset with TimeSeries
+        TimeSeriesCollection dataset = new TimeSeriesCollection ();
+        TimeSeries series = new TimeSeries ("Number of Sales", Year.class);
+        dataset.setDomainIsPointsInTime (true);
+        
+        listModels.forEach ((model) -> 
+        {
+            series.add (new Year (Integer.parseInt (model.getColumnLabel ())), model.getValue ());
+        });
+        
+        dataset.addSeries (series);
+        
+        // Returns new chart
+        return ChartFactory.createTimeSeriesChart (title, valueLabel, valueLabel, (XYDataset) dataset, true, false, false);
     }
 }

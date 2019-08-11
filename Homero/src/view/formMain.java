@@ -1,9 +1,9 @@
 package view;
 
-import com.sun.glass.ui.Screen;
 import dao.GenerateDataDAO;
 import dao.GraphicGeneratorDAO;
 import de.javasoft.plaf.synthetica.SyntheticaBlackEyeLookAndFeel;
+import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,66 +20,59 @@ import javax.swing.UnsupportedLookAndFeelException;
 import model.GraphicParameterMODEL;
 
 
-public class formMain extends javax.swing.JFrame 
+public class formMain extends JFrame
 {
+    private enum Categories { COUNTRY, GAME_GENRE, MODE, PLATAFORM, YEAR }
+    
+    private final int CHART_FRAME_X = 250;
+    private final int CHART_FRAME_Y = 50;
+    private final int CHART_FRAME_WIDTH = 800;
+    private final int CHART_FRAME_HEIGHT = 800;
+    
+    //-----------------------------------------------------------------------------------//
+    
     public static void main (String args[]) 
     {        
         try 
         {
-            /* Change UI */
             UIManager.setLookAndFeel (new SyntheticaBlackEyeLookAndFeel ());
         } 
         catch (ParseException | UnsupportedLookAndFeelException ex) 
         {
             JOptionPane.showMessageDialog (null, ex.getMessage());
         }
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() 
-        {
-            public void run() 
-            {
-                new formMain().setVisible(true);
-            }
-        });
+        
+        // Calls the form
+        EventQueue.invokeLater (() -> { new formMain ().setVisible (true); });
     }
     
-    public formMain() 
+    //-----------------------------------------------------------------------------------//
+    // CONSTRUCTORS
+    
+    public formMain () 
     {
         initComponents ();
-        
-        /* Buttons Action Listeners */
-        
-        btnCountry.addActionListener ( (ActionEvent ae) -> 
-        {
-            showChart ("COUNTRY");
-        });
-        
-        btnGameGenre.addActionListener ((ActionEvent ae) ->
-        {
-            showChart ("GAME_GENRE");
-        });
-        
-        btnGameMode.addActionListener ((ActionEvent ae) ->
-        {
-            showChart ("MODE");
-        });
-        
-        btnPlataform.addActionListener ((ActionEvent ae) ->
-        {
-            showChart ("PLATAFORM");
-        });
-        
-        btnYear.addActionListener ((ActionEvent ae) ->
-        {
-            showChart ("YEAR");
-        });
-        
-        /* Buttons Mouse Listeners*/
+        bindClickEvents ();
+        bindMouseEnterEvents ();
+    }
+    
+    //-----------------------------------------------------------------------------------//
+    
+    private void bindClickEvents ()
+    {
+        btnCountry.addActionListener ((ActionEvent event) -> showChart (Categories.COUNTRY.toString ()));
+        btnGameGenre.addActionListener ((ActionEvent event) -> showChart (Categories.GAME_GENRE.toString ()));
+        btnGameMode.addActionListener ((ActionEvent event) -> showChart (Categories.MODE.toString ()));
+        btnPlataform.addActionListener ((ActionEvent event) -> showChart (Categories.PLATAFORM.toString ()));
+        btnYear.addActionListener ((ActionEvent event) -> showChart (Categories.YEAR.toString ()));
+    }
+
+    private void bindMouseEnterEvents ()
+    {
         btnCountry.addMouseListener (new MouseAdapter ()
         {
             @Override
-            public void mouseEntered (MouseEvent me)
+            public void mouseEntered (MouseEvent event)
             {
                 lblCheckSells.setText ("Check Sales by Country");
             }
@@ -88,7 +81,7 @@ public class formMain extends javax.swing.JFrame
         btnGameGenre.addMouseListener (new MouseAdapter ()
         {
             @Override
-            public void mouseEntered (MouseEvent me)
+            public void mouseEntered (MouseEvent event)
             {
                 lblCheckSells.setText ("Check Sales by Game Genre");
             }
@@ -97,7 +90,7 @@ public class formMain extends javax.swing.JFrame
         btnGameMode.addMouseListener (new MouseAdapter ()
         {
             @Override
-            public void mouseEntered (MouseEvent me)
+            public void mouseEntered (MouseEvent event)
             {
                 lblCheckSells.setText ("Check Sales by Game Mode");
             }
@@ -106,7 +99,7 @@ public class formMain extends javax.swing.JFrame
         btnPlataform.addMouseListener (new MouseAdapter ()
         {
             @Override
-            public void mouseEntered (MouseEvent me)
+            public void mouseEntered (MouseEvent event)
             {
                 lblCheckSells.setText ("Check Sales by Plataform");
             }
@@ -115,13 +108,15 @@ public class formMain extends javax.swing.JFrame
         btnYear.addMouseListener (new MouseAdapter ()
         {
             @Override
-            public void mouseEntered (MouseEvent me)
+            public void mouseEntered (MouseEvent event)
             {
                 lblCheckSells.setText ("Check Sales by Year");
             }
         });
     }
+
     
+    //-----------------------------------------------------------------------------------//
     
     /**
      * Send parameters for DAO and shows a chart in new JFrame
@@ -129,7 +124,7 @@ public class formMain extends javax.swing.JFrame
      */
     private void showChart (String type)
     {
-        /* Parameters */
+        // Default 
         Collection<String> arrItems = new ArrayList<> ();
         Integer min = 0;
         Integer max = 0;
@@ -144,13 +139,13 @@ public class formMain extends javax.swing.JFrame
         {
             case "COUNTRY":
             {
-                /* Parameters */
+                // Parameters
                 typeChart = "VERTICAL_BAR_3D";
                 title = "Sales by Country";
                 categoryLabel = "Country";
                 valueLabel = "Total Revenues In US Dollars";
                 
-                /* Data */
+                // Data
                 arrItems.add ("China");
                 arrItems.add ("USA");
                 arrItems.add ("Japan");
@@ -162,7 +157,7 @@ public class formMain extends javax.swing.JFrame
                 arrItems.add ("Italy");
                 arrItems.add ("Spain");
                 
-                /* Min / Max values for random range */
+                // Min / Max values for random range
                 min = 1000000;
                 max = 40000000;
                 
@@ -171,20 +166,20 @@ public class formMain extends javax.swing.JFrame
             
             case "GAME_GENRE":
             {
-                /* Parameters */
+                // Parameters
                 typeChart = "HORIZONTAL_BAR_3D";
                 title = "Sales by Game Genre";
                 categoryLabel = "Genre";
                 valueLabel = "Total Revenues In US Dollars";
                 
-                /* Data */
+                // Data
                 arrItems.add ("Action-Role Playing");
                 arrItems.add ("Adventure");
                 arrItems.add ("Sports");
                 arrItems.add ("Fighting");
                 arrItems.add ("First Person Shooter");
                 
-                /* Min / Max values for random range */
+                // Min / Max values for random range
                 min = 10000000;
                 max = 300000000;
                 
@@ -193,17 +188,17 @@ public class formMain extends javax.swing.JFrame
           
             case "MODE":
             {
-                /* Parameters */
+                // Parameters
                 typeChart = "RING";
                 title = "Sales by Mode";
                 categoryLabel = "Mode";
                 valueLabel = "Total Revenues In US Dollars";
                 
-                /* Data */
+                // Data
                 arrItems.add ("Multiplayer");
                 arrItems.add ("Single-player");
                 
-                /* Min / Max values for random range */
+                // Min / Max values for random range
                 min = 1000000;
                 max = 10000000;
                 
@@ -212,13 +207,13 @@ public class formMain extends javax.swing.JFrame
             
             case "PLATAFORM":
             {
-                /* Parameters */
+                // Parameters
                 typeChart = "PIE";
                 title = "Sales by Plataform";
                 categoryLabel = "Plataform";
                 valueLabel = "Total Revenues In US Dollars";
                 
-                /* Data */
+                // Data
                 arrItems.add ("Microsoft Windows");
                 arrItems.add ("Nintendo Switch");
                 arrItems.add ("Nintendo Wii U");
@@ -227,7 +222,7 @@ public class formMain extends javax.swing.JFrame
                 arrItems.add ("Xbox 360");
                 arrItems.add ("Xbox One");
                 
-                /* Min / Max values for random range */
+                // Min / Max values for random range
                 min = 1000000;
                 max = 300000000;
                 
@@ -236,13 +231,13 @@ public class formMain extends javax.swing.JFrame
             
             case "YEAR":
             {
-                /* Parameters */
+                // Parameters
                 typeChart = "TIMESERIES";
                 title = "Sales by Year";
                 categoryLabel = "Year";
                 valueLabel = "Values in Millions";
                 
-                /* Data */
+                // Data
                 arrItems.add ("2000");
                 arrItems.add ("2001");
                 arrItems.add ("2002");
@@ -263,7 +258,7 @@ public class formMain extends javax.swing.JFrame
                 arrItems.add ("2017");
                 arrItems.add ("2018");
                 
-                /* Min / Max values for random range */
+                // Min / Max values for random range
                 min = 100000;
                 max = 300000000;
                 
@@ -271,26 +266,25 @@ public class formMain extends javax.swing.JFrame
             }
         }
        
-        /* Generate list of models with data */ 
+        // List with data
         Collection<GraphicParameterMODEL> listModel = dao.generate (arrItems, min, max);
         
+        // New image and label icon
         GraphicGeneratorDAO generatorDAO = new GraphicGeneratorDAO ();
-        
-        /* Create chart's image based on data passed */
         BufferedImage image = generatorDAO.createChart (typeChart, title, categoryLabel, valueLabel, listModel);
-        
-        /* Icon / Label based on image */
         ImageIcon icon = new ImageIcon (image);
         JLabel label = new JLabel (icon);
         
-        /* New JFrame and paratemers */
+        // New Jframe
         JFrame frame = new JFrame ();
-        frame.setBounds (250, 50, 800, 800);
+        frame.setBounds (CHART_FRAME_X, CHART_FRAME_Y, CHART_FRAME_WIDTH, CHART_FRAME_HEIGHT);
         frame.setLocationRelativeTo (this);
         frame.setVisible (true);
         frame.add (label);
         frame.pack ();
     }
+    
+    //-----------------------------------------------------------------------------------//
 
     
     @SuppressWarnings("unchecked")
@@ -351,12 +345,13 @@ public class formMain extends javax.swing.JFrame
             panMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panMainLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnYear, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCountry, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnGameGenre, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnGameMode, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPlataform, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnPlataform, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnYear, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCountry, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnGameGenre, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 

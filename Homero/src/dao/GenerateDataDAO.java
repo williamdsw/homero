@@ -5,13 +5,13 @@ import java.util.Collection;
 import model.GraphicParameterMODEL;
 
 /**
- *
  * @author William
  */
 public class GenerateDataDAO
 {
     /**
-     * Generates data from array of string passed and generate a random value based on min / max values
+     * Generates data from array of string passed and 
+     * generate a random value based on min / max values
      * @param arrItems
      * @param min
      * @param max
@@ -19,28 +19,23 @@ public class GenerateDataDAO
      */
     public Collection<GraphicParameterMODEL> generate (Collection<String> arrItems, Integer min, Integer max)
     {
-        /* List of models */
         Collection<GraphicParameterMODEL> listModels = new ArrayList<> ();
         
         try
         {
-            for (String item : arrItems)
+            arrItems.forEach ((item) -> 
             {
-                /* New instance */
                 GraphicParameterMODEL model = new GraphicParameterMODEL ();
-                
-                /* Passing data */
                 model.setColumnLabel (item);
                 model.setRowLabel (item);
-                model.setValue (Math.random () * (max - min + 1));
-                
-                /* Filling in list */
+                Double value = (Math.random () * (max - min + 1));
+                model.setValue (value);
                 listModels.add (model);
-            }
+            });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            System.out.println (e.getMessage ());
+            System.out.println (ex.getMessage ());
         }
         
         return listModels;

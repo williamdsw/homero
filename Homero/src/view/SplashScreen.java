@@ -3,6 +3,8 @@ package view;
 import de.javasoft.plaf.synthetica.SyntheticaBlackEyeLookAndFeel;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.HeadlessException;
+import static java.lang.Thread.sleep;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -14,73 +16,50 @@ import org.netbeans.lib.awtextra.AbsoluteConstraints;
 import org.netbeans.lib.awtextra.AbsoluteLayout;
 
 /**
- *
  * @author William
  */
 public class SplashScreen extends JWindow
 {
-    /* Self instance */
-    private SplashScreen self = this;
+    private SplashScreen instance = this;
     
-    /* Construtor */
+    private final String SPLASH_SCREEN_IMAGE_PATH = "/images/homero_splash.png";
+    private final int PROGRESS_BAR_MAX_VALUE = 100;
+    private final int TIME_TO_SLEEP = 100;
+    
+    //-----------------------------------------------------------------------------------//
+    // CONSTRUCTORS
+    
     public SplashScreen ()
     {
         try
         {
-            /* Layout parameters */
+            // Layout parameters
             AbsoluteLayout layout = new AbsoluteLayout ();
             AbsoluteConstraints absImage = new AbsoluteConstraints (0, 0);
             AbsoluteConstraints absProgressBar = new AbsoluteConstraints (0, 470);
             
-            /* Get image for Icon */
-            URL resource = this.getClass ().getResource ("/images/homero_splash.png");
+            // Get image for Icon
+            URL resource = this.getClass ().getResource (SPLASH_SCREEN_IMAGE_PATH);
             ImageIcon icon = new ImageIcon (resource);
             
-            /* New Progressbar */
-            JProgressBar bar = new JProgressBar ();
-            bar.setPreferredSize (new Dimension (569, 30));
+            // Progress bar
+            JProgressBar progressBar = new JProgressBar ();
+            progressBar.setPreferredSize (new Dimension (569, 30));
             
             JLabel label = new JLabel (icon);
             
-            /* Parameters for JWindow */
+            // Parameters for JWindow
             this.getContentPane ().setLayout (layout);
             this.getContentPane ().add (label, absImage);
-            this.getContentPane ().add (bar, absProgressBar);
+            this.getContentPane ().add (progressBar, absProgressBar);
             
             new Thread ()
             {
                 @Override
-                public void run ()
-                {
-                    try
-                    {
-                        /* Initiate Splash Screen */
-                        for (int i = 0; i <= 100; i++)
-                        {
-                            /* Progress bar fill*/
-                            bar.setValue (i);
-                            
-                            if (bar.getValue () == 100)
-                            {
-                                /* Shows main form and hide this */
-                                formMain main = new formMain ();
-                                main.setVisible (true);
-                                self.setVisible (false);
-                                
-                                break;
-                            }
-
-                            sleep (100);
-                        }
-                    }
-                    catch (InterruptedException ex)
-                    {
-                        JOptionPane.showMessageDialog (null, ex.getLocalizedMessage ());
-                    }
-                }
+                public void run () { runSplashScreen (progressBar); }
             }.start ();
             
-            /* Parameters form JWindow */
+            // Parameters for JWindow
             this.pack ();
             this.setVisible (true);
             this.setLocationRelativeTo (null);
@@ -91,19 +70,42 @@ public class SplashScreen extends JWindow
         }
     }
     
-    /* main */
+    private void runSplashScreen (JProgressBar progressBar) throws HeadlessException
+    {
+        try
+        {
+            for (int i = 0; i <= PROGRESS_BAR_MAX_VALUE; i++)
+            {
+                // fills 
+                progressBar.setValue (i);
+
+                // Shows main screen
+                if (progressBar.getValue () == 100)
+                {
+                    formMain main = new formMain ();
+                    main.setVisible (true);
+                    instance.setVisible (false);
+                    break;
+                }
+
+                sleep (TIME_TO_SLEEP);
+            }
+        }
+        catch (InterruptedException ex)
+        {
+            JOptionPane.showMessageDialog (null, ex.getLocalizedMessage ());
+        }
+    }
+    
+    //-----------------------------------------------------------------------------------//
+    
     public static void main (String[] args)
     {
         try
         {
-            /* Change UI */
+            // UI and shows SplashScreen
             UIManager.setLookAndFeel (new SyntheticaBlackEyeLookAndFeel ());
-            
-            /* Show this */
-            EventQueue.invokeLater (() ->
-            {
-                new SplashScreen ().setVisible (true);
-            });
+            EventQueue.invokeLater (() -> { new SplashScreen ().setVisible (true); });
         }
         catch (Exception ex)
         {
